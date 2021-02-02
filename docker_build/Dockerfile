@@ -69,6 +69,9 @@ ENV PATH=$OPENLANE_ROOT:$OPENLANE_ROOT/scripts:$OPENROAD/bin:$OPENROAD/bin/Linux
 ENV LD_LIBRARY_PATH=$OPENROAD/lib:$OPENROAD/lib/Linux-x86_64:$LD_LIBRARY_PATH
 ENV MANPATH=$OPENROAD/share/man:$MANPATH
 
+# For PythonKit
+ENV PYTHON_LIBRARY="/usr/lib64/libpython3.6m.so.1.0"
+
 # install klayout
 RUN yum install -y which patch
 ADD ./klayout.tar.gz /
@@ -88,6 +91,11 @@ ADD ./openLANE_flow.tar.gz $OPENLANE_ROOT
 RUN cd $OPENROAD/OpenDB_python/ && \
 	python3 setup.py install && \
 	rm -rf $OPENROAD/OpenDB_python
+
+RUN yum install -y iverilog
+# Install Pyverilog
+RUN python3 -m pip install https://github.com/PyHDI/Pyverilog/archive/develop.zip
+RUN ln -s "/usr/lib64/ivl" "/usr/local/lib/ivl" 
 
 WORKDIR $OPENLANE_ROOT
 
