@@ -33,6 +33,11 @@ proc run_non_interactive_mode {args} {
 	prep {*}$args
 
 	run_synthesis
+
+	if { $::env(RUN_DFT) == 1} {
+        run_dft
+    }
+	
 	run_floorplan
 	run_placement
 	run_cts

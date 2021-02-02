@@ -108,7 +108,7 @@ proc trim_lib {args} {
         {-output optional}
     }
     set flags {}
-    parse_key_args "trim_lib" args arg_values $options flags_map $flags
+    parse_key_args "" args arg_values $options flags_map $flags
     set_if_unset arg_values(-input) $::env(LIB_SYNTH_COMPLETE)
     set_if_unset arg_values(-output) $::env(LIB_SYNTH)
 
@@ -386,6 +386,7 @@ proc prep {args} {
         {lvs lvs/lvs}
         {cvc cvc/cvc}
         {klayout klayout/klayout}
+        {dft dft/dft}
     }
 
     set final_output \
@@ -398,7 +399,8 @@ proc prep {args} {
         [list magic magic/$::env(DESIGN_NAME)] \
         [list lvs lvs/$::env(DESIGN_NAME).lvs] \
         [list cvc cvc/$::env(DESIGN_NAME)] \
-        [list klayout klayout/$::env(DESIGN_NAME)] 
+        [list klayout klayout/$::env(DESIGN_NAME)] \
+        [list dft dft/$::env(DESIGN_NAME)] 
         ]
 
     array set results_file_name [make_array $final_output $::env(RESULTS_DIR)/]
@@ -422,7 +424,7 @@ proc prep {args} {
     set util 	$::env(FP_CORE_UTIL)
     set density $::env(PL_TARGET_DENSITY)
 
-    set stages {synthesis floorplan placement cts routing magic lvs cvc klayout}
+    set stages {synthesis floorplan placement cts routing magic lvs cvc klayout dft}
     foreach stage $stages {
         file mkdir\
             $::env(RESULTS_DIR)/$stage \
