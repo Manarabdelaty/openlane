@@ -14,16 +14,13 @@
 
 FROM swift:5.3.3-centos7 as build
 
-# Install Basics
-RUN yum groupinstall -y "Development Tools"
-
 # Swift requires 2.x verison of git
 RUN yum remove git -y
 RUN yum install https://repo.ius.io/ius-release-el7.rpm -y
 RUN yum install git224 -y
 
 # Install Python
-RUN yum install -y python36u python36u-pip python36u-tkinter python36u-devel.x86_64
+RUN yum install -y python36 python36-pip python36-tkinter python36-devel.x86_64
 
 # Install jinja
 RUN python3.6 -m pip install --upgrade pip
@@ -34,16 +31,6 @@ RUN python3.6 -m pip install https://github.com/PyHDI/Pyverilog/archive/develop.
 
 # Install IcarusVerilog 10.2+
 RUN yum install -y iverilog
-
-# Install Swift
-# RUN mkdir -p /build/share
-# WORKDIR /build/share
-# RUN curl -sL https://swift.org/builds/swift-5.3.2-release/centos7/swift-5.3.2-RELEASE/swift-5.3.2-RELEASE-centos7.tar.gz | tar -xzf -
-# RUN yum install -y binutils gcc glibc-static libbsd-devel libedit libedit-devel \
-#     libicu-devel libstdc++-static pkgconfig  python2 sqlite
-
-# __block conflicts with clang's __block qualifier
-# RUN sed -i -e 's/\*__block/\*__libc_block/g' /usr/include/unistd.h
 
 ENV PATH=/build/share/swift-5.3.2-RELEASE-centos7/usr/bin:"${PATH}"
 ENV PYVERILOG_IVERILOG="/build/bin/iverilog"
