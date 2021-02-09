@@ -13,16 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-fault_points=$(perl -ne 'print "$1 $2 $3" if /^Found\s(\d+) fault sites in\s(\d+) gates and\s(\d+) ports\.$/' $1)
-run_time=$(perl -ne 'print "$1" if /^Time elapsed: (\d+\.\d+)s\.$/' $1)
-coverage=$(perl -ne 'print "$1" if /^Simulations concluded: Coverage (\d+\.\d+)%$/' $1)
-internal_flipflops=$(perl -ne 'print "$1" if /^Internal scan chain successfuly constructed\. Length:\s+(\d+)$/' $2)
-boundary_scan_cells=$(perl -ne 'print "$1" if /^Boundary scan cells successfuly chained\. Length:\s+(\d+)$/' $2)
-scan_chain_len=$(perl -ne 'print "$1" if /^Total scan-chain length:\s+(\d+)$/' $2)
+if [ -e "$1" ]; then
+    fault_points=$(perl -ne 'print "$1 $2 $3" if /^Found\s(\d+) fault sites in\s(\d+) gates and\s(\d+) ports\.$/' $1)
+    run_time=$(perl -ne 'print "$1" if /^Time elapsed: (\d+\.\d+)s\.$/' $1)
+    coverage=$(perl -ne 'print "$1" if /^Simulations concluded: Coverage (\d+\.\d+)%$/' $1)
+    echo "Fault Sites: " $fault_points
+    echo "Run time: $run_time s"
+    echo "Coverage: $coverage %"
+fi
 
-# echo "Fault Sites: " $fault_points
-echo "Run time: $run_time s"
-echo "Coverage: $coverage %"
-echo "Number of Scan Flip-Flops:  $internal_flipflops"
-echo "Number of Boundary Scan cells: $boundary_scan_cells"
-echo "Total Scan Chain Length: $scan_chain_len"
+if [ -e "$2" ]; then
+    internal_flipflops=$(perl -ne 'print "$1" if /^Internal scan chain successfuly constructed\. Length:\s+(\d+)$/' $2)
+    boundary_scan_cells=$(perl -ne 'print "$1" if /^Boundary scan cells successfuly chained\. Length:\s+(\d+)$/' $2)
+    scan_chain_len=$(perl -ne 'print "$1" if /^Total scan-chain length:\s+(\d+)$/' $2)
+
+    echo "Number of Scan Flip-Flops:  $internal_flipflops"
+    echo "Number of Boundary Scan cells: $boundary_scan_cells"
+    echo "Total Scan Chain Length: $scan_chain_len"
+fi

@@ -17,6 +17,7 @@ set ::env(DFT_TV_CEILING) "10"
 set ::env(DFT_MIN_COVERAGE) "80"
 set ::env(DFT_NUM_THREADS) "10"
 set ::env(DFT_RESET_ACTIVE_LOW) 0
+set ::env(DFT_IGNORED_INPUTS) ""
 set ::env(DFT_INSERT_JTAG)  1
 set ::env(DFT_RUN_JTAG_SIM) 1
 set ::env(DFT_RUN_CHAIN_SIM) 1
