@@ -26,14 +26,15 @@ These variables are optional that can be specified in the design configuration f
 | `SYNTH_DRIVING_CELL_PIN`  | The name of the SYNTH_DRIVING_CELL output pin. <br>(Default: `Y`)|
 | `SYNTH_CAP_LOAD` | The capacitive load on the output ports in femtofarads. <br> (Default: `17.65` ff)|
 | `SYNTH_MAX_FANOUT`  | The max load that the output ports can drive. <br> (Default: `5` cells) |
-| `SYNTH_MAX_TRANS` | The max transition time (slew) from high to low or low to high on cell inputs in ns. Used in synthesis <br> (Default: Calculated at runtime as `10%` of the provided clock period)|
-| `SYNTH_STRATEGY` | Strategies for abc logic synthesis and technology mapping <br> Possible values are `DELAY|AREA 0-3|0-2`; the first part refers to the optimization target of the synthesis strategy (area vs. delay) and the second one is an index. <br> (Default: `AREA 0`)|
+| `SYNTH_MAX_TRAN` | The max transition time (slew) from high to low or low to high on cell inputs in ns. Used in synthesis <br> (Default: Calculated at runtime as `10%` of the provided clock period, unless this exceeds a set DEFAULT_MAX_TRAN, in which case it will be used as is). |
+| `SYNTH_STRATEGY` | Strategies for abc logic synthesis and technology mapping <br> Possible values are `DELAY/AREA 0-3/0-2`; the first part refers to the optimization target of the synthesis strategy (area vs. delay) and the second one is an index. <br> (Default: `AREA 0`)|
 | `SYNTH_BUFFERING` | Enables abc cell buffering <br> Enabled = 1, Disabled = 0 <br> (Default: `1`)|
 | `SYNTH_SIZING` | Enables abc cell sizing (instead of buffering) <br> Enabled = 1, Disabled = 0 <br> (Default: `0`)|
 | `SYNTH_READ_BLACKBOX_LIB` | A flag that enable reading the full(untrimmed) liberty file as a blackbox for synthesis. Please note that this is not used in technology mapping. This should only be used when trying to preserve gate instances in the rtl of the design.  <br> Enabled = 1, Disabled = 0 <br> (Default: `0`)|
 | `SYNTH_NO_FLAT` | A flag that disables flattening the hierarchy during synthesis, only flattening it after synthesis, mapping and optimizations. <br> Enabled = 1, Disabled = 0 <br> (Default: `0`)|
-| `LIB_SLOWEST` | Points to the lib file, corresponding to the slowest corner, for max delay calculation during STA. <br> (Default:`$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/lib/sky130_fd_sc_hd__ff_n40C_1v95.lib`) |
-| `LIB_FASTEST` | Points to the lib file, corresponding to the fastest corner, for min delay calculation during STA. <br> (Default:`$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/lib/sky130_fd_sc_hd__ss_100C_1v60.lib`) |
+| `SYNTH_SHARE_RESOURCES` | A flag that enables yosys to reduce the number of cells by determining shareable resources and merging them. <br> Enabled = 1, Disabled = 0 <br> (Default: `1`)|
+| `LIB_SLOWEST` | Points to the lib file, corresponding to the slowest corner, for max delay calculation during STA. <br> (Default: `$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/lib/sky130_fd_sc_hd__ff_n40C_1v95.lib`) |
+| `LIB_FASTEST` | Points to the lib file, corresponding to the fastest corner, for min delay calculation during STA. <br> (Default: `$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/lib/sky130_fd_sc_hd__ss_100C_1v60.lib`) |
 | `LIB_TYPICAL` | Library used for typical delay calculation during STA. <br> (Default`LIB_SYNTH`) |
 | `CLOCK_BUFFER_FANOUT` | Fanout of clock tree buffers. <br> (Default: `16`) |
 | `ROOT_CLK_BUFFER` | Root clock buffer of the clock tree. <br> (Default: `sky130_fd_sc_hd__clkbuf_16`) |
@@ -42,8 +43,10 @@ These variables are optional that can be specified in the design configuration f
 | `CLK_BUFFER_OUTPUT` | Output pin of the clock tree buffer. <br> (Default: `X`) |
 | `BASE_SDC_FILE` | Specifies the base sdc file to source before running Static Timing Analysis. <br> (Default: `$::env(OPENLANE_ROOT)/scripts/base.sdc`) |
 | `VERILOG_INCLUDE_DIRS` | Specifies the verilog includes directories. <br> Optional. |
-| `SYNTH_FLAT_TOP` | Specifies whether or not the top level should be flattened during elaboration. 1 = True, 0= False <br> Default=`0`. |
+| `SYNTH_FLAT_TOP` | Specifies whether or not the top level should be flattened during elaboration. 1 = True, 0= False <br> Default: `0`. |
 | `IO_PCT` | Specifies the percentage of the clock period used in the input/output delays. Ranges from 0 to 1.0. <br> (Default: `0.2`) |
+| `NO_SYNTH_LIST` | Specifies the file that contains the don't-use-cell-list to be excluded from the liberty file during synthesis and timing optimizations. If it's not defined, this path is searched `$::env(PDK_ROOT)/$::env(PDK)/libs.tech/openlane/$::env(STD_CELL_LIBRARY)/no_synth.cells` and if it's not found, then the original liberty will be used as is. |
+
 
 ### Floorplanning
 
@@ -63,7 +66,7 @@ These variables are optional that can be specified in the design configuration f
 | `FP_PDN_HOFFSET`  | The offset of the horizontal power stripes on the metal layer 5 in the power distribution network <br> (Default: `16.65`) |
 | `FP_PDN_HPITCH`  | The pitch of the horizontal power stripes on the metal layer 5 in the power distribution network <br> (Default: `153.18`) |
 | `FP_PDN_AUTO_ADJUST` | Decides whether or not the flow should attempt to re-adjust the power grid, in order for it to fit inside the core area of the design, if needed. <br> 1=enabled, 0 =disabled (Default: `1`) |
-| `FP_TAPCELL_DIST`  | The horizontal distance between two tapcell columns <br> (Default: `25`) |
+| `FP_TAPCELL_DIST`  | The horizontal distance between two tapcell columns <br> (Default: `14`) |
 | `FP_IO_VEXTEND`  |  Extends the vertical io pins outside of the die by the specified units<br> (Default: `-1` Disabled) |
 | `FP_IO_HEXTEND`  |  Extends the horizontal io pins outside of the die by the specified units<br> (Default: `-1` Disabled) |
 | `FP_IO_VLENGTH`  | The length of the vertical IOs in microns. <br> (Default: `4`) |
@@ -78,7 +81,7 @@ These variables are optional that can be specified in the design configuration f
 | `FP_PDN_ENABLE_RAILS` | Enables the creation of rails in the power grid. 0=Disable 1=Enable. <br> (Default: `1`) |
 | `FP_HORIZONTAL_HALO` | Sets the horizontal halo around the tap and decap cells. The value provided is in microns. <br> Default: `10` |
 | `FP_VERTICAL_HALO` | Sets the vertical halo around the tap and decap cells. The value provided is in microns. <br> Default: set to the value of `FP_HORIZONTAL_HALO` |
-| `DESIGN_IS_CORE` | Controls the layers used in the power grid. Depending on whether the design is the core of the chip or a macro inside the core. 1=Is a Core, 0=Is a Macro <br> (Default:`1`)|
+| `DESIGN_IS_CORE` | Controls the layers used in the power grid. Depending on whether the design is the core of the chip or a macro inside the core. 1=Is a Core, 0=Is a Macro <br> (Default: `1`)|
 | `FP_PIN_ORDER_CFG` | Points to the pin order configuration file to set the pins in specific directions (S, W, E, N). Check this [file][0] as an example. If not set, then the IO pins will be placed based on one of the other methods depending on the rest of the configurations. <br> (Default: NONE)|
 | `FP_CONTEXT_DEF` | Points to the parent DEF file that includes this macro/design and uses this DEF file to determine the best locations for the pins. It must be used with `FP_CONTEXT_LEF`, otherwise it's considered non-existing. If not set, then the IO pins will be placed based on one of the other methods depending on the rest of the configurations. <br> (Default: NONE)|
 | `FP_CONTEXT_LEF` | Points to the parent LEF file that includes this macro/design and uses this LEF file to determine the best locations for the pins. It must be used with `FP_CONTEXT_DEF`, otherwise it's considered non-existing. If not set, then the IO pins will be placed based on one of the other methods depending on the rest of the configurations. <br> (Default: NONE)|
@@ -99,11 +102,12 @@ These variables are optional that can be specified in the design configuration f
 | `PL_RANDOM_GLB_PLACEMENT` | Specifies whether the placer should run random placement or not. This is useful if the design is tiny (less than 100 cells). 0 = false, 1 = true <br> (Default: `0`) |
 | `PL_RANDOM_INITIAL_PLACEMENT` | Specifies whether the placer should run random placement or not followed by replace's initial placement. This is useful if the design is tiny (less than 100 cells). 0 = false, 1 = true <br> (Default: `0`) |
 | `PL_ROUTABILITY_DRIVEN` | Specifies whether the placer should use routability driven placement. 0 = false, 1 = true <br> (Default: `0`) |
-| `PL_OPENPHYSYN_OPTIMIZATIONS` | Specifies whether OpenPhySyn should be used to perform timing optimizations or not. 0 = false, 1 = true <br> (Default: `1`) |
+| `PL_OPENPHYSYN_OPTIMIZATIONS` | Specifies whether OpenPhySyn should be used to perform timing optimizations or not. 0 = false, 1 = true <br> (Default: `0`) |
 | `PSN_ENABLE_RESIZING` | Enables driver resizing by OpenPhySyn. 0 = Disabled, 1 = Enabled <br> (Default: `1`)|
 | `PSN_ENABLE_PIN_SWAP` | Enables pin swapping for timing optimization by OpenPhySyn. 0 = Disabled, 1 = Enabled <br> (Default: `1`)|
-| `PL_RESIZER_OVERBUFFER` | Enables inserting buffers to reduce the number of long wires.1 = Enabled, 0 = Disabled <br> (Default: `0`)|
-| `MAX_WIRE_LENGTH` | Specifies the maximum wire length cap used by resizer if `PL_RESIZER_OVERBUFFER` is set to 1. <br> (Default: `50`)|
+| `PL_RESIZER_DESIGN_OPTIMIZATIONS` | Specifies whether resizer design optimizations should be performed or not. 0 = false, 1 = true <br> (Default: `1`) |
+| `PL_RESIZER_TIMING_OPTIMIZATIONS` | Specifies whether resizer timing optimizations should be performed or not. 0 = false, 1 = true <br> (Default: `1`) |
+| `PL_RESIZER_MAX_WIRE_LENGTH` | Specifies the maximum wire length cap used by resizer to insert buffers. If set to 0, no buffers will be inserted. Value in microns. <br> (Default: `0`)|
 | `LIB_OPT` | Points to the lib file, corresponding to the slowest corner, for max delay calculation during OpenPhySyn optimizations. This is usually a trimmed version of `LIB_SLOWEST`. <br> Default: `$::env(TMP_DIR)/opt.lib` |
 | `PL_ESTIMATE_PARASITICS` | Specifies whether or not to run STA after global placement using OpenROAD's estimate_parasitics -placement and generates reports under `reports/placement`. 1 = Enabled, 0 = Disabled. <br> (Default: `1`) |
 | `PL_DIAMOND_SEARCH_HEIGHT` | Specifies the diamond search height used for legalizing the cells during detailed placement. The search width is calculated internally as `heigh*5`. For designs that contain big macros, increasing this value to above 400 will allow for more search space and more potentail for successful legalization. <br> (Default: `100`) |
@@ -115,7 +119,9 @@ These variables are optional that can be specified in the design configuration f
 | `CTS_TARGET_SKEW` | The target clock skew in picoseconds. <br> (Default: `200` ps)|
 | `CTS_ROOT_BUFFER`| The name of cell inserted at the root of the clock tree. |
 | `CLOCK_TREE_SYNTH` | Enable clock tree synthesis for tirtonCTS. <br> (Default: `1`)|
-| `CTS_TOLERANCE` | an integer value that represents a tradeoff of QoR and runtime. Higher values will produce smaller runtime but worse QoR <br> (Default: `100`) |
+| `CTS_TOLERANCE` | An integer value that represents a tradeoff of QoR and runtime. Higher values will produce smaller runtime but worse QoR <br> (Default: `100`) |
+| `CTS_SINK_CLUSTERING_SIZE` | Specifies the maximum number of sinks per cluster. <br> (Default: `20`) |
+| `CTS_SINK_CLUSTERING_MAX_DIAMETER` | Specifies maximum diameter (in micron) of sink cluster. <br> (Default: `50`) |
 
 ### Routing
 
@@ -124,7 +130,7 @@ These variables are optional that can be specified in the design configuration f
 | `GLB_RT_MINLAYER` | The number of lowest layer to be used in routing. <br> (Default: `1`)|
 | `GLB_RT_MAXLAYER` | The number of highest layer to be used in routing. <br> (Default: `6`)|
 | `GLB_RT_ADJUSTMENT` | Reduction in the routing capacity of the edges between the cells in the global routing graph. Values range from 0 to 1. <br> 1 = most reduction, 0 = least reduction  <br> (Default: `0`)|
-| `GLB_RT_L1_ADJUSTMENT` | Reduction in the routing capacity of the edges between the cells in the global routing graph but specific to li1 layer in sky130A. Values range from 0 to 1 <br> (Default: `0`) |
+| `GLB_RT_L1_ADJUSTMENT` | Reduction in the routing capacity of the edges between the cells in the global routing graph but specific to li1 layer in sky130A. Values range from 0 to 1 <br> (Default: `0.99`) |
 | `GLB_RT_L2_ADJUSTMENT` | Reduction in the routing capacity of the edges between the cells in the global routing graph but specific to met1 in sky130A. Values range from 0 to 1 <br> (Default: `0`) |
 | `GLB_RT_L3_ADJUSTMENT` | Reduction in the routing capacity of the edges between the cells in the global routing graph but specific to met2 in sky130A. Values range from 0 to 1 <br> (Default: `0`) |
 | `GLB_RT_L4_ADJUSTMENT` | Reduction in the routing capacity of the edges between the cells in the global routing graph but specific to met3 in sky130A. Values range from 0 to 1 <br> (Default: `0`) |
@@ -174,7 +180,7 @@ These variables are optional that can be specified in the design configuration f
 | `PDK` | Specifies the process design kit (PDK). <br> (Default: `sky130A` )|
 | `STD_CELL_LIBRARY` | Specifies the standard cell library to be used under the specified PDK. <br> (Default: `sky130_fd_sc_hd` )|
 | `PDK_ROOT` | Specifies the folder path of the PDK. It searches for a `config.tcl` in `$PDK_ROOT/$PDK/libs.tech/openlane/` directory and at least have one standard cell library config defined in `$PDK_ROOT/$PDK/libs.tech/openlane/$STD_CELL_LIBRARY`. |
-| `CELL_PAD` | Cell padding; increases the width of cells. <br> (Default: `2` microns -- 2 sites)|
+| `CELL_PAD` | Cell padding; increases the width of cells. <br> (Default: `4` microns -- 4 sites)|
 | `DIODE_PADDING` | Diode cell padding; increases the width of diode cells during placement checks. <br> (Default: `2` microns -- 2 sites)|
 | `WIRE_RC_LAYER` | The metal layer used in estimate parastics `set_wire_rc`. Should be moved to PDK configurations later.. <br> Default: `met1`.|
 | `MERGED_LEF_UNPADDED` | Points to `merged_unpadded.lef` by default. it contains the technology LEF for the used STD_CELL_LIBRARY merged with the LEF file for all the cells. |

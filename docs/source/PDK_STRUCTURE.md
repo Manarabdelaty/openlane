@@ -50,6 +50,7 @@ This section defines the neccessary variables for PDK configuration file
 | `GLB_RT_L1_ADJUSTMENT` | Reduction in the routing capacity of the edges between the cells in the global routing graph but specific to li1 layer in sky130A. Values range from 0 to 1 <br> (Default: `0`) |
 | `CTS_SQR_CAP` | Defines the capacitance per square micron, used in CTS. |
 | `CTS_SQR_RES` | Defines the resistance per square micron, used in CTS. |
+| `DEFAULT_MAX_TRAN` | Defines the default maximum transition value, used in CTS & synthesis. |
 | `FP_PDN_RAIL_OFFSET` | Defines the rail offset for met1 used in PDN. <br> Default: `0`. |
 | `FP_PDN_VWIDTH` | Defines the strap width for the vertical layer used in PDN. <br> Default: `1.6`. |
 | `FP_PDN_HWIDTH` | Defines the strap width for the horizontal layer used in PDN. <br> Default: `1.6`. |
@@ -71,6 +72,7 @@ This section defines the necessary variables to configure a standard cell librar
 | `LIB_SLOWEST` | Points to the lib file, corresponding to the slowest corner, for max delay calculation during STA. |
 | `LIB_FASTEST` | Points to the lib file, corresponding to the fastest corner, for min delay calculation during STA. |
 | `LIB_TYPICAL` | Points to the lib file for typical delay calculation during STA. |
+| `NO_SYNTH_LIST` | Specifies the file that contains the don't-use-cell-list to be excluded from the liberty file during synthesis and timing optimizations. If it's not defined, this path is searched `$::env(PDK_ROOT)/$::env(PDK)/libs.tech/openlane/$::env(STD_CELL_LIBRARY)/no_synth.cells` and if it's not found, then the original liberty will be used as is. |
 | `PLACE_SITE` | Defines the main site used by the cells. Used during floorplanning to generate the rows. |
 | `PLACE_SITE_WIDTH` | Defines the main site width.Used during floorplanning to generate the rows. |
 | `PLACE_SITE_HEIGHT` | Defines the main site height.Used during floorplanning to generate the rows. |
@@ -120,3 +122,5 @@ There are some cell types that you don't want to use in synthesis like, for exam
 Also, some of the cells, back when this list was created, had hard-to-access pin shapes, so the detailed router didn't manage to do routing cleanly.
 
 However, this list is likely over-constraining, and if you have done experiments allowing smaller sizes incrementally and still got clean routed layouts, please let us know your findings, or better yet, submit a pull request at [open_pdks](https://github.com/RTimothyEdwards/open_pdks) with a suggested no_synth list.
+
+You can also point your custom no_synth.cells by setting the value for `NO_SYNTH_LIST` to point to it.

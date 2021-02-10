@@ -112,9 +112,13 @@ proc trim_lib {args} {
     set_if_unset arg_values(-input) $::env(LIB_SYNTH_COMPLETE)
     set_if_unset arg_values(-output) $::env(LIB_SYNTH)
 
-    set scl_no_synth_lib $::env(PDK_ROOT)/$::env(PDK)/libs.tech/openlane/$::env(STD_CELL_LIBRARY)/no_synth.cells
-    if { [file exists $scl_no_synth_lib] } {
-        try_catch $::env(SCRIPTS_DIR)/libtrim.pl $arg_values(-input) $scl_no_synth_lib > $arg_values(-output)
+    # For backward compatibility
+    if {![info exists ::env(NO_SYNTH_LIST)]} {
+        set ::env(NO_SYNTH_LIST) $::env(PDK_ROOT)/$::env(PDK)/libs.tech/openlane/$::env(STD_CELL_LIBRARY)/no_synth.cells
+    }
+    if { [file exists $::env(NO_SYNTH_LIST)] } {
+        file copy -force $::env(NO_SYNTH_LIST) $::env(TMP_DIR)/no_synth.cells
+        try_catch $::env(SCRIPTS_DIR)/libtrim.pl $arg_values(-input) $::env(NO_SYNTH_LIST) > $arg_values(-output)
     } else {
         file copy -force $arg_values(-input) $arg_values(-output)
     }
@@ -377,6 +381,7 @@ proc prep {args} {
         {tapcell floorplan/tapcell}
         {replaceio placement/replace}
         {openphysyn placement/openphysyn}
+        {resizer placement/resizer}
         {opendp placement/opendp}
         {addspacers routing/addspacers}
         {fastroute routing/fastroute}
@@ -454,7 +459,16 @@ proc prep {args} {
 
     # Fill config file with special cases
     if { ! [info exists ::env(SYNTH_MAX_TRAN)] } {
-        set_log ::env(SYNTH_MAX_TRAN) "\[\expr {0.1*$::env(CLOCK_PERIOD)}\]" $::env(GLB_CFG_FILE) 1
+        if { [info exists ::env(CLOCK_PERIOD)] } {
+            if { [info exists ::env(DEFAULT_MAX_TRAN)] } {
+                set ::env(SYNTH_MAX_TRAN) [expr min([expr {0.1*$::env(CLOCK_PERIOD)}], $::env(DEFAULT_MAX_TRAN))]
+            } else {
+                set ::env(SYNTH_MAX_TRAN) [expr {0.1*$::env(CLOCK_PERIOD)}]
+            }
+        } else {
+            set ::env(SYNTH_MAX_TRAN) 0
+        }
+        set_log ::env(SYNTH_MAX_TRAN) $::env(SYNTH_MAX_TRAN) $::env(GLB_CFG_FILE) 1
     }
     if { $::env(SYNTH_TOP_LEVEL) } {
         set_log ::env(SYNTH_SCRIPT) "$::env(OPENLANE_ROOT)/scripts/synth_top.tcl" $::env(GLB_CFG_FILE) 0

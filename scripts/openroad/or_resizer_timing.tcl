@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+foreach lib $::env(LIB_OPT) {
+    read_liberty $lib
+}
 if {[catch {read_lef $::env(MERGED_LEF_UNPADDED)} errmsg]} {
     puts stderr $errmsg
     exit 1
@@ -21,11 +24,20 @@ if {[catch {read_def $::env(CURRENT_DEF)} errmsg]} {
     puts stderr $errmsg
     exit 1
 }
+# Resize
+# estimate wire rc parasitics
+set_wire_rc -signal -layer $::env(WIRE_RC_LAYER)
+set_wire_rc -clock  -layer $::env(WIRE_RC_LAYER)
 
+# CTS and detailed placement move instances, so update parastic estimates.
+estimate_parasitics -placement
+set_propagated_clock [all_clocks]
+repair_timing
 
-if {[catch {pdngen $::env(PDN_CFG) -verbose} errmsg]} {
-    puts stderr $errmsg
-    exit 1
-}
+set_placement_padding -global -right $::env(CELL_PAD)
+
+set_placement_padding -masters $::env(CELL_PAD_EXCLUDE) -right 0 -left 0
+detailed_placement
+check_placement -verbose
 
 write_def $::env(SAVE_DEF)

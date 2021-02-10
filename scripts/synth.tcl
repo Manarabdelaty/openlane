@@ -225,7 +225,10 @@ if { $::env(SYNTH_NO_FLAT) } {
 	synth -top $vtop -flatten
 }
 
-share -aggressive
+if { $::env(SYNTH_SHARE_RESOURCES) } {
+	share -aggressive
+}
+
 opt
 opt_clean -purge
 
@@ -236,6 +239,19 @@ if { $tbuf_map } {
         log {mapping tbuf}
         techmap -map $::env(TRISTATE_BUFFER_MAP)
         simplemap
+}
+
+# handle technology mapping of 4-MUX, and tell Yosys to infer 4-muxes
+if { [info exists ::env(SYNTH_MUX4_MAP)] && [file exists $::env(SYNTH_MUX4_MAP)] } {
+  muxcover -mux4 
+  techmap -map $::env(SYNTH_MUX4_MAP)
+  simplemap
+}
+
+# handle technology mapping of 2-MUX
+if { [info exists ::env(SYNTH_MUX_MAP)] && [file exists $::env(SYNTH_MUX_MAP)] } {
+  techmap -map $::env(SYNTH_MUX_MAP)
+  simplemap
 }
 
 # handle technology mapping of latches

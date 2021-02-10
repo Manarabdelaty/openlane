@@ -1,3 +1,4 @@
+#!/bin/sh
 # Copyright 2020 Efabless Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,22 +12,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+set -e
+echo "RUN ROOT: $RUN_ROOT"
+cd $RUN_ROOT
+echo "Configureing git info..."
+git config --global user.email "travis@travis-ci.org"
+git config --global user.name "Travis CI"
 
-foreach lib $::env(LIB_SYNTH_COMPLETE) {
-    read_liberty $lib
-}
-if {[catch {read_lef $::env(MERGED_LEF_UNPADDED)} errmsg]} {
-    puts stderr $errmsg
-    exit 1
-}
+echo "Adding remote tracker..."
+git remote add origin-ci https://${MY_GITHUB_TOKEN}@github.com/efabless/openlane.git > /dev/null 2>&1
+echo "Pushing to Github..."
+git push --force --set-upstream origin-ci HEAD:${TRAVIS_BRANCH} > /dev/null 2>&1
 
-if {[catch {read_def $::env(CURRENT_DEF)} errmsg]} {
-    puts stderr $errmsg
-    exit 1
-}
-
-set_wire_rc -layer $::env(WIRE_RC_LAYER)
-estimate_parasitics -placement
-repair_design -max_wire_length $::env(MAX_WIRE_LENGTH) -buffer_cell $::env(RE_BUFFER_CELL)
-#check_in_core
-write_def $::env(SAVE_DEF)
+echo "Push successful"
+exit 0

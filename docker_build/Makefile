@@ -1,7 +1,7 @@
 #DOCKER_BUILD_OPTS ?= --rm --no-cache
 DOCKER_BUILD_OPTS ?= --rm
 DOCKERFILE_PATH ?= ./Dockerfile
-IMAGE_NAME ?= openlane:rc7
+IMAGE_NAME ?= efabless/openlane:v0.2
 #ROOT = sudo
 
 TOOLS = klayout replace opendp route cugr drcu opensta yosys antmicro_yosys magic openroad_app padring netgen vlogtoverilog openphysyn cvc fault
@@ -41,7 +41,6 @@ tar/openroad_tools.tar.gz: $(TOOL_EXPORT_TARGETS_REAL)
 	cd tar && tar -czf openroad_tools.tar.gz ../build
 
 tar/openLANE_flow.tar.gz: FORCE
-	find ../ -name '*.tcl' -exec chmod +x {} \;
 	cd tar && tar --exclude='../../.git' --exclude='../../docker_build' --exclude="../../designs" --exclude="../../pdks/" --exclude="../../logs/*" -czf openLANE_flow.tar.gz ../../
 
 FORCE:
